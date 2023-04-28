@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,23 +39,14 @@ public class MenuService {
     }
 
     public MenuDto findById(long id) {
-        var menu = menuRepository.findById(id)
+        return menuRepository.findById(id)
+                .map(menu -> new MenuDto(menu.getNameMenu(), menu.getBurgers()))
                 .orElseThrow(() -> new NoSuchElementException("Ingredient with id " + id + " not found"));
-        MenuDto menuDto = new MenuDto();
-        menuDto.setNameMenu(menu.getNameMenu());
-        menuDto.setBurgers(menu.getBurgers());
-        return menuDto;
     }
 
     public List<MenuDto> findAll() {
-        List<MenuDto> listDto = new ArrayList<>();
-        var findAll = menuRepository.findAll().stream()
-                .map(menu -> {
-                    MenuDto dto = new MenuDto();
-                    dto.setNameMenu(menu.getNameMenu());
-                    dto.setBurgers(menu.getBurgers());
-                    return listDto.add(dto);
-                });
-        return listDto;
+        return menuRepository.findAll().stream()
+                .map(menu -> new MenuDto(menu.getNameMenu(), menu.getBurgers()))
+                .collect(Collectors.toList());
     }
 }

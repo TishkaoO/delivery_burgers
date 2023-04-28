@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,28 +40,22 @@ public class IngredientService {
     }
 
     public IngredientDto findById(long id) {
-        var ingredientDto = ingredientRepository.findById(id)
-                .map(ingredient -> {
-                    IngredientDto dto = new IngredientDto();
-                    dto.setName(ingredient.getName());
-                    dto.setPrice(ingredient.getPrice());
-                    dto.setType(ingredient.getType());
-                    return dto;
-                })
+        return ingredientRepository.findById(id)
+                .map(ingredient -> new IngredientDto(
+                        ingredient.getName(),
+                        ingredient.getPrice(),
+                        ingredient.getType())
+                )
                 .orElseThrow(() -> new NoSuchElementException("Ingredient with id " + id + " not found"));
-        return ingredientDto;
     }
 
     public List<IngredientDto> findAll() {
-        List<IngredientDto> listDto = new ArrayList<>();
-        var findAll = ingredientRepository.findAll().stream()
-                .map(ingredient -> {
-                    IngredientDto dto = new IngredientDto();
-                    dto.setName(ingredient.getName());
-                    dto.setPrice(ingredient.getPrice());
-                    dto.setType(ingredient.getType());
-                  return listDto.add(dto);
-                });
-        return listDto;
+        return ingredientRepository.findAll().stream()
+                .map(ingredient -> new IngredientDto(
+                        ingredient.getName(),
+                        ingredient.getPrice(),
+                        ingredient.getType())
+                )
+                .collect(Collectors.toList());
     }
 }

@@ -43,25 +43,24 @@ public class BurgerService {
 
     public BurgerDto findById(long id) {
         return burgerRepository.findById(id)
-                .map(burger -> {
-                    BurgerDto burgerDto = new BurgerDto();
-                    burgerDto.setName(burger.getName());
-                    burgerDto.setDescription(burger.getDescription());
-                    burgerDto.setPrice(burger.getPrice());
-                    return burgerDto;
-                })
+                .map(burger -> new BurgerDto(
+                        burger.getName(),
+                        burger.getDescription(),
+                        burger.getPrice(),
+                        burger.isSpicy(),
+                        burger.getIngredients())
+                )
                 .orElseThrow(() -> new IllegalArgumentException("Burger with id " + id + " is not found"));
     }
 
     public List<BurgerDto> findAll() {
-        List<BurgerDto> listDto = new ArrayList<>();
-        var burgerDto = burgerRepository.findAll().stream().map(tmp -> {
-            BurgerDto dto = new BurgerDto();
-            dto.setName(tmp.getName());
-            dto.setPrice(tmp.getPrice());
-            dto.setDescription(tmp.getDescription());
-            return listDto.add(dto);
-        }).collect(Collectors.toList());
-        return listDto;
+        return burgerRepository.findAll().stream()
+                .map(burger -> new BurgerDto(
+                        burger.getName(),
+                        burger.getDescription(),
+                        burger.getPrice(),
+                        burger.isSpicy(),
+                        burger.getIngredients()))
+                .collect(Collectors.toList());
     }
 }

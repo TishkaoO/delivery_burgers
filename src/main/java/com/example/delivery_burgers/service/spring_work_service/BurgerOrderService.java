@@ -6,8 +6,8 @@ import com.example.delivery_burgers.repository.BurgerOrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,28 +40,21 @@ public class BurgerOrderService {
 
     public BurgerOrderDto findById(long id) {
         return burgerOrderRepository.findById(id)
-                .map(order -> {
-                    BurgerOrderDto dto = new BurgerOrderDto();
-                    dto.setDeliveryAddress(order.getDeliveryAddress());
-                    dto.setBurgers(order.getBurgers());
-                    dto.setCreationDate(order.getCreationDate());
-                    dto.setReady(order.isReady());
-                    return dto;
-                })
+                .map(order -> new BurgerOrderDto(
+                        order.getDeliveryAddress(),
+                        order.getBurgers(),
+                        order.getCreationDate(),
+                        order.isReady()))
                 .orElseThrow(() -> new IllegalArgumentException("order is not exists"));
     }
 
     public List<BurgerOrderDto> findAll() {
-        List<BurgerOrderDto> dtoList = new ArrayList<>();
-        var burgers = burgerOrderRepository.findAll().stream()
-                .map(order -> {
-                    BurgerOrderDto dto = new BurgerOrderDto();
-                    dto.setDeliveryAddress(order.getDeliveryAddress());
-                    dto.setBurgers(order.getBurgers());
-                    dto.setCreationDate(order.getCreationDate());
-                    dto.setReady(order.isReady());
-                    return dtoList.add(dto);
-                });
-        return dtoList;
+        return burgerOrderRepository.findAll().stream()
+                .map(order -> new BurgerOrderDto(
+                        order.getDeliveryAddress(),
+                        order.getBurgers(),
+                        order.getCreationDate(),
+                        order.isReady()))
+                .collect(Collectors.toList());
     }
 }
