@@ -34,19 +34,16 @@ public class BurgerController {
     }
 
     @GetMapping("/{id}")
-    public BurgerDto findById(@PathVariable long id) {
-        return burgerService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Burger is not found. Please, check that such a burger exists..."
-        ));
+    public ResponseEntity<BurgerDto> findById(@PathVariable long id) {
+        var burgerDto = burgerService.findById(id);
+        return ResponseEntity.ok(burgerDto);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<BurgerDto> updateById(@PathVariable("id") long id, @RequestBody BurgerDto burgerDto) {
         boolean isUpdated = burgerService.updateById(id, burgerDto);
         if (isUpdated) {
-            BurgerDto updatedDto = burgerService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Burger is not found. Please, check that such a burger exists..."
-            ));
+            BurgerDto updatedDto = burgerService.findById(id);
             return ResponseEntity.ok(updatedDto);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

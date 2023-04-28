@@ -35,19 +35,16 @@ public class MenuController {
     }
 
     @GetMapping("/{id}")
-    public MenuDto findById(@PathVariable long id) {
-        return menuService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Menu is not found. Please, check that such a menu exists..."
-        ));
+    public ResponseEntity<MenuDto> findById(@PathVariable long id) {
+        var menuDto = menuService.findById(id);
+        return ResponseEntity.ok(menuDto);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<MenuDto> updateById(@PathVariable("id") long id, @RequestBody MenuDto menuDto) {
         boolean isUpdated = menuService.updateById(id, menuDto);
         if (isUpdated) {
-            MenuDto updatedDto = menuService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Menu is not found. Please, check that such a menu exists..."
-            ));
+            MenuDto updatedDto = menuService.findById(id);
             return ResponseEntity.ok(updatedDto);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

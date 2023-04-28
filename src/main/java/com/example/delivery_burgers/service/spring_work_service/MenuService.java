@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -29,38 +30,31 @@ public class MenuService {
     }
 
     public boolean updateById(long id, MenuDto dto) {
-        var findMenu = menuRepository.findById(id);
-        if (!findMenu.isEmpty()) {
-            var menu = findMenu.get();
-            menu.setNameMenu(dto.getNameMenu());
-            menu.setBurgers(dto.getBurgers());
-            return true;
-        }
-        return false;
+        var menu = menuRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Ingredient with id " + id + " not found"));
+        menu.setNameMenu(dto.getNameMenu());
+        menu.setBurgers(dto.getBurgers());
+        return true;
     }
 
-    public Optional<MenuDto> findById(long id) {
-        Optional<Menu> optionalMenu = menuRepository.findById(id);
-        if (optionalMenu.isPresent()) {
-            Menu menu = optionalMenu.get();
-            MenuDto dto = new MenuDto();
-            dto.setNameMenu(menu.getNameMenu());
-            dto.setBurgers(menu.getBurgers());
-            return Optional.of(dto);
-        } else {
-            return Optional.empty();
-        }
+    public MenuDto findById(long id) {
+        var menu = menuRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Ingredient with id " + id + " not found"));
+        MenuDto menuDto = new MenuDto();
+        menuDto.setNameMenu(menu.getNameMenu());
+        menuDto.setBurgers(menu.getBurgers());
+        return menuDto;
     }
 
     public List<MenuDto> findAll() {
         List<MenuDto> listDto = new ArrayList<>();
-        var findAll = menuRepository.findAll();
-        for (Menu menu : findAll) {
-            MenuDto dto = new MenuDto();
-            dto.setNameMenu(menu.getNameMenu());
-            dto.setBurgers(menu.getBurgers());
-            listDto.add(dto);
-        }
+        var findAll = menuRepository.findAll().stream()
+                .map(menu -> {
+                    MenuDto dto = new MenuDto();
+                    dto.setNameMenu(menu.getNameMenu());
+                    dto.setBurgers(menu.getBurgers());
+                    return listDto.add(dto);
+                });
         return listDto;
     }
 }

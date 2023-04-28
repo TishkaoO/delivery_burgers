@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -33,36 +34,34 @@ public class BurgerService {
     }
 
     public boolean updateById(long id, BurgerDto burgerDto) {
-        var findOrder = burgerRepository.findById(id);
-        if (!findOrder.isEmpty()) {
-            var burger = findOrder.get();
-            burger.setSpicy(burgerDto.isSpicy());
-            burger.setIngredients(burgerDto.getIngredients());
-            return true;
-        }
-        return false;
+        var burger = burgerRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Burger with id " + id + " not found"));
+        burger.setSpicy(burgerDto.isSpicy());
+        burger.setIngredients(burgerDto.getIngredients());
+        return true;
     }
 
-    public Optional<BurgerDto> findById(long id) {
-        var burger = burgerRepository.findById(id).orElseThrow(
-                () -> new IllegalArgumentException("burger is not exists"));
-        BurgerDto burgerDto = new BurgerDto();
-        burgerDto.setName(burger.getName());
-        burgerDto.setDescription(burger.getDescription());
-        burgerDto.setPrice(burger.getPrice());
-        return Optional.of(burgerDto);
+    public BurgerDto findById(long id) {
+        return burgerRepository.findById(id)
+                .map(burger -> {
+                    BurgerDto burgerDto = new BurgerDto();
+                    burgerDto.setName(burger.getName());
+                    burgerDto.setDescription(burger.getDescription());
+                    burgerDto.setPrice(burger.getPrice());
+                    return burgerDto;
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Burger with id " + id + " is not found"));
     }
 
     public List<BurgerDto> findAll() {
         List<BurgerDto> listDto = new ArrayList<>();
-        var findAll = burgerRepository.findAll();
-        for (Burger tmp : findAll) {
+        var burgerDto = burgerRepository.findAll().stream().map(tmp -> {
             BurgerDto dto = new BurgerDto();
             dto.setName(tmp.getName());
             dto.setPrice(tmp.getPrice());
             dto.setDescription(tmp.getDescription());
-            listDto.add(dto);
-        }
+            return listDto.add(dto);
+        }).collect(Collectors.toList());
         return listDto;
     }
 }

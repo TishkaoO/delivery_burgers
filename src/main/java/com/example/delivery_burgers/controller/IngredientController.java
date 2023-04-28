@@ -35,19 +35,16 @@ public class IngredientController {
     }
 
     @GetMapping("/{id}")
-    public IngredientDto findById(@PathVariable long id) {
-        return ingredientService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "Ingredient is not found. Please, check that such a ingredient exists..."
-        ));
+    public ResponseEntity<IngredientDto> findById(@PathVariable long id) {
+        var dto = ingredientService.findById(id);
+        return ResponseEntity.ok(dto);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<IngredientDto> updateById(@PathVariable("id") long id, @RequestBody IngredientDto dto) {
         boolean isUpdated = ingredientService.update(id, dto);
         if (isUpdated) {
-            IngredientDto updatedDto = ingredientService.findById(id).orElseThrow(() -> new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "Ingredient is not found. Please, check that such a ingredient exists..."
-            ));
+            IngredientDto updatedDto = ingredientService.findById(id);
             return ResponseEntity.ok(updatedDto);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
