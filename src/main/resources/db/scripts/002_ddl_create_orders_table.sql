@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS orders(
+order_id SERIAL PRIMARY KEY,
+delivery_address VARCHAR NOT NULL,
+creation_date TIMESTAMP,
+is_ready BOOLEAN DEFAULT FALSE
+);
