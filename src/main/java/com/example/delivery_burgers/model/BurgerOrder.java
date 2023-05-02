@@ -1,6 +1,6 @@
 package com.example.delivery_burgers.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;

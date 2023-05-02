@@ -40,7 +40,7 @@ public class BurgerController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<BurgerDto> updateById(@PathVariable("id") long id, @RequestBody BurgerDto burgerDto) {
+    public ResponseEntity<BurgerDto> updateById(@PathVariable long id, @RequestBody BurgerDto burgerDto) {
         boolean isUpdated = burgerService.updateById(id, burgerDto);
         if (isUpdated) {
             BurgerDto updatedDto = burgerService.findById(id);
