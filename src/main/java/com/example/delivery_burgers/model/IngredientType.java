@@ -13,13 +13,12 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "ingredients_type")
+@Table(name = "ingredient_types")
 public class IngredientType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @EqualsAndHashCode.Include
-    @Column(name = "ingredient_type_id")
     private Long id;
 
     private String name;

@@ -17,7 +17,6 @@ public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @EqualsAndHashCode.Include
-    @Column(name = "ingredient_id")
     private Long id;
 
     private String name;
@@ -25,7 +24,7 @@ public class Ingredient {
     private double price;
 
     @ManyToOne
-    @JoinColumn(name = "ingredient_type_id")
+    @JoinColumn(name = "ingredient_types_id")
     private IngredientType type;
 
     @ManyToOne

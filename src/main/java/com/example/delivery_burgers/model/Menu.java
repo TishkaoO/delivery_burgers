@@ -11,16 +11,15 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @Entity
+@Table(name = "menus")
 public class Menu {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @EqualsAndHashCode.Include
-    @Column(name = "menu_id")
     private Long id;
 
-    @Column(name = "name_menu")
-    private String nameMenu;
+    private String name;
 
     @OneToMany(mappedBy = "menu")
     private List<Burger> burgers;
