@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,18 +39,7 @@ public class CustomerController {
         return entity;
     }
 
-    @PatchMapping("/orders/{order_id}")
-    public OrderDto update(@PathVariable("order_id") Long orderId, @RequestParam("burger_id") Long burgerId,
-                           @RequestParam("number") int numberOfBurger) {
-        return orderService.update(orderId, burgerId, numberOfBurger);
-    }
-
-    @PostMapping("/create-order")
-    public OrderDto createOrder(@RequestParam("burger_id") List<Long> burgersId) {
-       return orderService.createOrder(burgersId);
-    }
-
-    @PostMapping("/pay")
+//    @PostMapping("/pay")
 //    public ResponseEntity<Boolean> payForTheOrder(@RequestBody  card) {
 //        boolean status = paymentService.payForTheOrder(card);
 //        return ResponseEntity
