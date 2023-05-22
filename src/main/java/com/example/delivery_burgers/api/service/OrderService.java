@@ -2,6 +2,7 @@ package com.example.delivery_burgers.api.service;
 
 import com.example.delivery_burgers.api.dto.AscDto;
 import com.example.delivery_burgers.api.dto.OrderDto;
+import com.example.delivery_burgers.api.exceptions.BadRequestException;
 import com.example.delivery_burgers.api.mapper.OrderMapper;
 import com.example.delivery_burgers.store.entity.BurgerEntity;
 import com.example.delivery_burgers.store.entity.OrderEntity;
@@ -29,7 +30,7 @@ public class OrderService {
     public OrderDto createOrder(List<Long> burgerId) {
         List<BurgerEntity> burgerEntities = burgerId.stream()
                 .map(id -> burgerRepository.findById(id)
-                        .orElseThrow(() -> new IllegalArgumentException()))
+                        .orElseThrow(() -> new BadRequestException("Order not found")))
                 .collect(Collectors.toList());
         double totalAmount = burgerEntities.stream()
                 .mapToDouble(BurgerEntity::getPrice)
@@ -47,7 +48,7 @@ public class OrderService {
 
     public AscDto deleteOrderById(Long id) {
         OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new BadRequestException("Order not found"));
         orderRepository.delete(order);
         return AscDto.builder()
                 .answer("it's GOOD!")
@@ -56,17 +57,17 @@ public class OrderService {
 
     public OrderDto update(Long orderId, Long burgerId, int numberOfBurger) {
         OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+                .orElseThrow(() -> new BadRequestException("Order not found"));
         BurgerEntity burger = burgerRepository.findById(burgerId)
-                .orElseThrow(() -> new IllegalArgumentException("Burger not found"));
+                .orElseThrow(() -> new BadRequestException("Burger not found"));
         List<BurgerEntity> selectedBurgers = order.getBurgers().stream()
                 .filter(nextBurger -> nextBurger.getId().equals(burger.getId()))
                 .collect(Collectors.toList());
         if (numberOfBurger < 0) {
-            throw new IllegalArgumentException("Cannot pass a negative number of burgers");
+            throw new BadRequestException("Cannot pass a negative number of burgers");
         }
         if (selectedBurgers.size() == numberOfBurger) {
-            throw new IllegalArgumentException("Already have the specified number of burgers");
+            throw new BadRequestException("Already have the specified number of burgers");
         }
         if (selectedBurgers.size() < numberOfBurger) {
             int additionalBurgers = numberOfBurger - selectedBurgers.size();

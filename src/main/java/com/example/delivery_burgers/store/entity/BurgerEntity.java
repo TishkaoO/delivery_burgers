@@ -38,9 +38,4 @@ public class BurgerEntity {
 
     @Column(name = "is_spicy")
     private boolean isSpicy;
-
-    @OneToMany
-    @JoinColumn(name = "burger_id", referencedColumnName = "id")
-    @NotEmpty(message = "Collection cannot be empty")
-    private List<IngredientEntity> ingredients = new ArrayList<>();
 }
