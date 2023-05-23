@@ -5,16 +5,18 @@ import com.example.delivery_burgers.api.dto.OrderDto;
 import com.example.delivery_burgers.api.dto.StatusOrderDto;
 import com.example.delivery_burgers.api.exceptions.BadRequestException;
 import com.example.delivery_burgers.api.mapper.OrderMapper;
+import com.example.delivery_burgers.api.mapper.StatusOrderMapper;
 import com.example.delivery_burgers.store.entity.BurgerEntity;
 import com.example.delivery_burgers.store.entity.CustomerEntity;
 import com.example.delivery_burgers.store.entity.OrderEntity;
-import com.example.delivery_burgers.store.repository.BurgerRepository;
+import com.example.delivery_burgers.store.entity.StatusOrderEntity;
 import com.example.delivery_burgers.store.repository.CustomerRepository;
 import com.example.delivery_burgers.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,14 +26,16 @@ import java.util.stream.Collectors;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
-    private final BurgerRepository burgerRepository;
+    private final BurgerService burgerService;
     private final CustomerRepository customerRepository;
+    private final StatusOrderService statusOrderService;
+    private final StatusOrderMapper statusOrderMapper;
 
     private int countNumberOrder = 1;
 
     public OrderDto createOrder(Long customerId, List<Long> burgerId) {
         List<BurgerEntity> burgerEntities = burgerId.stream()
-                .map(id -> getBurgerEntityByIdOrElseThrow(id))
+                .map(id -> burgerService.getBurgerEntityByIdOrElseThrow(id))
                 .collect(Collectors.toList());
         double totalAmount = burgerEntities.stream()
                 .mapToDouble(BurgerEntity::getPrice)
@@ -39,16 +43,17 @@ public class OrderService {
         OrderEntity builder = OrderEntity.builder()
                 .numberOrder(countNumberOrder++)
                 .burgers(burgerEntities)
+                .createdAt(Instant.now())
                 .build();
-        orderRepository.saveAndFlush(builder);
-        log.info("Order added!");
-        OrderDto orderDto = orderMapper.toDto(builder);
-        orderDto.setStatusOrder(StatusOrderDto.builder()
-                .name("waiting for payment")
-                .description("after payment, the order will be given to the kitchen")
-                .build());
-        orderDto.setToPay(totalAmount);
+        orderRepository.save(builder);
+        StatusOrderEntity statusEntity = statusOrderService.getStatusByName("waiting for payment");
+        linkOrderToStatusOrder(builder.getId(), statusEntity.getId());
         linkOrderToCustomer(customerId, builder.getId());
+        OrderDto orderDto = orderMapper.toDto(builder);
+        StatusOrderDto statusDto = statusOrderMapper.toDto(statusEntity);
+        orderDto.setStatusOrder(statusDto);
+        orderDto.setToPay(totalAmount);
+        log.info("Order added!");
         return orderDto;
     }
 
@@ -62,7 +67,7 @@ public class OrderService {
 
     public OrderDto update(Long orderId, Long burgerId, int numberOfBurger) {
         OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
-        BurgerEntity burger = getBurgerEntityByIdOrElseThrow(burgerId);
+        BurgerEntity burger = burgerService.getBurgerEntityByIdOrElseThrow(burgerId);
         List<BurgerEntity> selectedBurgers = order.getBurgers().stream()
                 .filter(nextBurger -> nextBurger.getId().equals(burger.getId()))
                 .collect(Collectors.toList());
@@ -96,17 +101,18 @@ public class OrderService {
         return order;
     }
 
-    private BurgerEntity getBurgerEntityByIdOrElseThrow(Long burgerId) {
-        BurgerEntity burger = burgerRepository.findById(burgerId)
-                .orElseThrow(() -> new BadRequestException("Burger not found"));
-        return burger;
-    }
-
-    private void linkOrderToCustomer(Long customerId, Long orderId) {
+    public void linkOrderToCustomer(Long customerId, Long orderId) {
         CustomerEntity customer = customerRepository.findById(customerId)
                 .orElseThrow(() -> new IllegalArgumentException("customer not found"));
         OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
         customer.getOrders().add(order);
         orderRepository.save(order);
+    }
+
+    public void linkOrderToStatusOrder(Long orderId, Long statusId) {
+        OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
+        StatusOrderEntity statusOrder = statusOrderService.getStatusOrderEntityByIdOrElseThrow(statusId);
+        statusOrder.getOrders().add(order);
+        statusOrderService.save(statusOrder);
     }
 }
