@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CustomerService {
-    private final CustomerRepository personRepository;
+    private final CustomerRepository customerRepository;
     private final CustomerMapper customerMapper;
     private final UserEventPublisher eventPublisher;
 
@@ -21,8 +21,13 @@ public class CustomerService {
                 .phoneNumber(customer.getPhoneNumber())
                 .password(customer.getPassword())
                 .build();
-        CustomerEntity registered = personRepository.save(builder);
+        CustomerEntity registered = customerRepository.save(builder);
         eventPublisher.publishUserRegisteredEvent(registered);
         return customerMapper.toDto(registered);
+    }
+
+    public CustomerEntity getCustomerByIdOrElseThrow(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("customer not found"));
     }
 }

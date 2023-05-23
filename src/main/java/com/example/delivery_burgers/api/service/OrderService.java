@@ -27,7 +27,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final BurgerService burgerService;
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
     private final StatusOrderService statusOrderService;
     private final StatusOrderMapper statusOrderMapper;
 
@@ -102,8 +102,7 @@ public class OrderService {
     }
 
     public void linkOrderToCustomer(Long customerId, Long orderId) {
-        CustomerEntity customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new IllegalArgumentException("customer not found"));
+        CustomerEntity customer = customerService.getCustomerByIdOrElseThrow(customerId);
         OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
         customer.getOrders().add(order);
         orderRepository.save(order);
