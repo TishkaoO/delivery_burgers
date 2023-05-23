@@ -5,8 +5,6 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Builder
 @AllArgsConstructor

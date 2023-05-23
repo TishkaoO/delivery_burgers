@@ -27,7 +27,7 @@ public class CardService {
     public CardDto createCard(Long customerId, String nameOwner, String cardNumber, LocalDateTime expiryDate, String cvv) {
         CardEntity cardEntity = CardEntity.builder()
                 .nameOwner(nameOwner)
-                .number(cardNumber)
+                .cardNumber(cardNumber)
                 .expiryDate(expiryDate)
                 .balance(50)
                 .cvv(cvv)
