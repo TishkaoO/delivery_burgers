@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class CardController {
     private final CardService cardService;
 
-    @PostMapping("/create{customer_id}")
+    @PostMapping("/create/card-customer/{customer_id}")
     public CardDto createCard(@PathVariable("customer_id") Long customerId,
                               @RequestParam("name_owner") String nameOwner,
                               @RequestParam("card_number") String cardNumber,

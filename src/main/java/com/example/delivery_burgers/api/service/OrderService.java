@@ -61,7 +61,7 @@ public class OrderService {
         OrderEntity order = getOrderEntityByIdOrElseThrow(id);
         orderRepository.delete(order);
         return AscDto.builder()
-                .answer("it's GOOD!")
+                .answer("Order delete!")
                 .build();
     }
 

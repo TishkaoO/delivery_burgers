@@ -1,5 +1,6 @@
 package com.example.delivery_burgers.api.controller;
 
+import com.example.delivery_burgers.api.dto.AscDto;
 import com.example.delivery_burgers.api.dto.OrderDto;
 import com.example.delivery_burgers.api.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -15,16 +16,21 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
 
-    @PostMapping("/create")
-    public OrderDto createOrder(@PathVariable("user_id") Long userId, @RequestParam("burger_id") List<Long> burgersId) {
-        return orderService.createOrder(userId, burgersId);
+    @PostMapping("/create/customer-order/{customer_id}")
+    public OrderDto createOrder(@PathVariable("customer_id") Long customerId, @RequestParam("burger_id") List<Long> burgersId) {
+        return orderService.createOrder(customerId, burgersId);
     }
 
-    @PatchMapping("/{order_id}")
+    @PatchMapping("/update/{order_id}")
     public OrderDto update(@PathVariable("order_id") Long orderId, @RequestParam("burger_id") Long burgerId,
                            @RequestParam("number") int numberOfBurger) {
         return orderService.update(orderId, burgerId, numberOfBurger);
 
         //TODO: решить проблему с методом не корректно обновляет а точнее перебивает стоимость на 0
+    }
+
+    @DeleteMapping("delete/{id}")
+    public AscDto deleteOrderById(@PathVariable Long id) {
+        return orderService.deleteOrderById(id);
     }
 }
