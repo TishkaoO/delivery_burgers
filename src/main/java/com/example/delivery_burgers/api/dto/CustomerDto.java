@@ -1,14 +1,11 @@
 package com.example.delivery_burgers.api.dto;
 
-import com.example.delivery_burgers.store.entity.CardEntity;
 import com.example.delivery_burgers.api.validation.Operation;
 import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
-import java.util.Set;
 
 @Data
 public class CustomerDto {
