@@ -39,13 +39,6 @@ public class CustomerController {
         return entity;
     }
 
-//    @PostMapping("/pay")
-//    public ResponseEntity<Boolean> payForTheOrder(@RequestBody  card) {
-//        boolean status = paymentService.payForTheOrder(card);
-//        return ResponseEntity
-//                .status(status ? HttpStatus.OK : HttpStatus.NOT_FOUND)
-//                .build(); TODO:Доделать способ оплаты
-//    }
 
 
 //    @GetMapping("/check-status")

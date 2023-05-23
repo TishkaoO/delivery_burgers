@@ -1,10 +1,10 @@
 package com.example.delivery_burgers.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,7 +16,8 @@ public class OrderDto {
     private List<BurgerDto> burgers;
 
     @JsonProperty(namespace = "created_date")
-    private Instant createdDate;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Your_Timezone")
+    private Instant createdDate = Instant.now();
 
     @JsonProperty(namespace = "status_order")
     private StatusOrderDto statusOrder;

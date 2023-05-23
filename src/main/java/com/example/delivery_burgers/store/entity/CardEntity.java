@@ -32,8 +32,4 @@ public class CardEntity {
     private String cvv;
 
     private double balance;
-
-    @OneToMany
-    @JoinColumn(name = "card_id", referencedColumnName = "id")
-    private List<PaymentEntity> payments = new ArrayList<>();
 }

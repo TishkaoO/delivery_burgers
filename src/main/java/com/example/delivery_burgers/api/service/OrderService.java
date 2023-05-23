@@ -2,19 +2,20 @@ package com.example.delivery_burgers.api.service;
 
 import com.example.delivery_burgers.api.dto.AscDto;
 import com.example.delivery_burgers.api.dto.OrderDto;
+import com.example.delivery_burgers.api.dto.StatusOrderDto;
 import com.example.delivery_burgers.api.exceptions.BadRequestException;
 import com.example.delivery_burgers.api.mapper.OrderMapper;
 import com.example.delivery_burgers.store.entity.BurgerEntity;
+import com.example.delivery_burgers.store.entity.CustomerEntity;
 import com.example.delivery_burgers.store.entity.OrderEntity;
 import com.example.delivery_burgers.store.repository.BurgerRepository;
+import com.example.delivery_burgers.store.repository.CustomerRepository;
 import com.example.delivery_burgers.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,13 +25,13 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final BurgerRepository burgerRepository;
+    private final CustomerRepository customerRepository;
 
     private int countNumberOrder = 1;
 
-    public OrderDto createOrder(List<Long> burgerId) {
+    public OrderDto createOrder(Long customerId, List<Long> burgerId) {
         List<BurgerEntity> burgerEntities = burgerId.stream()
-                .map(id -> burgerRepository.findById(id)
-                        .orElseThrow(() -> new BadRequestException("Order not found")))
+                .map(id -> getBurgerEntityByIdOrElseThrow(id))
                 .collect(Collectors.toList());
         double totalAmount = burgerEntities.stream()
                 .mapToDouble(BurgerEntity::getPrice)
@@ -42,13 +43,17 @@ public class OrderService {
         orderRepository.saveAndFlush(builder);
         log.info("Order added!");
         OrderDto orderDto = orderMapper.toDto(builder);
+        orderDto.setStatusOrder(StatusOrderDto.builder()
+                .name("waiting for payment")
+                .description("after payment, the order will be given to the kitchen")
+                .build());
         orderDto.setToPay(totalAmount);
+        linkOrderToCustomer(customerId, builder.getId());
         return orderDto;
     }
 
     public AscDto deleteOrderById(Long id) {
-        OrderEntity order = orderRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("Order not found"));
+        OrderEntity order = getOrderEntityByIdOrElseThrow(id);
         orderRepository.delete(order);
         return AscDto.builder()
                 .answer("it's GOOD!")
@@ -56,10 +61,8 @@ public class OrderService {
     }
 
     public OrderDto update(Long orderId, Long burgerId, int numberOfBurger) {
-        OrderEntity order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new BadRequestException("Order not found"));
-        BurgerEntity burger = burgerRepository.findById(burgerId)
-                .orElseThrow(() -> new BadRequestException("Burger not found"));
+        OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
+        BurgerEntity burger = getBurgerEntityByIdOrElseThrow(burgerId);
         List<BurgerEntity> selectedBurgers = order.getBurgers().stream()
                 .filter(nextBurger -> nextBurger.getId().equals(burger.getId()))
                 .collect(Collectors.toList());
@@ -85,5 +88,25 @@ public class OrderService {
         dto.setToPay(totalAmount);
         OrderEntity updatedOrder = orderRepository.save(order);
         return orderMapper.toDto(updatedOrder);
+    }
+
+    public OrderEntity getOrderEntityByIdOrElseThrow(Long orderId) {
+        OrderEntity order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BadRequestException("Order not found"));
+        return order;
+    }
+
+    private BurgerEntity getBurgerEntityByIdOrElseThrow(Long burgerId) {
+        BurgerEntity burger = burgerRepository.findById(burgerId)
+                .orElseThrow(() -> new BadRequestException("Burger not found"));
+        return burger;
+    }
+
+    private void linkOrderToCustomer(Long customerId, Long orderId) {
+        CustomerEntity customer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new IllegalArgumentException("customer not found"));
+        OrderEntity order = getOrderEntityByIdOrElseThrow(orderId);
+        customer.getOrders().add(order);
+        orderRepository.save(order);
     }
 }
