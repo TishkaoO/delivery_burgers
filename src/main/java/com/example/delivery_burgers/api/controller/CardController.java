@@ -3,6 +3,7 @@ package com.example.delivery_burgers.api.controller;
 import com.example.delivery_burgers.api.dto.CardDto;
 import com.example.delivery_burgers.api.service.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -17,7 +18,7 @@ public class CardController {
     public CardDto createCard(@PathVariable("customer_id") Long customerId,
                               @RequestParam("name_owner") String nameOwner,
                               @RequestParam("card_number") String cardNumber,
-                              @RequestParam("expiry_date") LocalDateTime expiryDate, @RequestParam("cvv") String cvv) {
+                              @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")@RequestParam("expiry_date") LocalDateTime expiryDate, @RequestParam("cvv") String cvv) {
         return cardService.createCard(customerId, nameOwner, cardNumber,
                 expiryDate, cvv);
     }

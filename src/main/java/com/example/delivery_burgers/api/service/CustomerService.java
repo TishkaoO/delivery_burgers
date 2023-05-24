@@ -1,5 +1,6 @@
 package com.example.delivery_burgers.api.service;
 
+import com.example.delivery_burgers.api.exceptions.BadRequestException;
 import com.example.delivery_burgers.api.service.mail.UserEventPublisher;
 import com.example.delivery_burgers.api.dto.CustomerDto;
 import com.example.delivery_burgers.api.mapper.CustomerMapper;
@@ -28,6 +29,6 @@ public class CustomerService {
 
     public CustomerEntity getCustomerByIdOrElseThrow(Long id) {
         return customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("customer not found"));
+                .orElseThrow(() -> new BadRequestException("customer not found"));
     }
 }

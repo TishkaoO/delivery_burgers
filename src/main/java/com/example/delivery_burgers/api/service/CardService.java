@@ -1,11 +1,11 @@
 package com.example.delivery_burgers.api.service;
 
 import com.example.delivery_burgers.api.dto.CardDto;
+import com.example.delivery_burgers.api.exceptions.BadRequestException;
 import com.example.delivery_burgers.api.mapper.CardMapper;
 import com.example.delivery_burgers.store.entity.CardEntity;
 import com.example.delivery_burgers.store.entity.CustomerEntity;
 import com.example.delivery_burgers.store.repository.CardRepository;
-import com.example.delivery_burgers.store.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -33,9 +33,14 @@ public class CardService {
         return cardMapper.toDto(cardEntity);
     }
 
+    public CardEntity getCardById(Long id) {
+        return cardRepository.findById(id)
+                .orElseThrow(() -> new BadRequestException("card not found"));
+    }
+
     private void linkCardToCustomer(Long customerId, Long cardId) {
         CustomerEntity customer = customerService.getCustomerByIdOrElseThrow(customerId);
-        CardEntity card = cardRepository.findById(cardId).orElseThrow(() -> new IllegalArgumentException("card not found"));
+        CardEntity card = getCardById(cardId);
         customer.getCards().add(card);
         cardRepository.save(card);
     }
