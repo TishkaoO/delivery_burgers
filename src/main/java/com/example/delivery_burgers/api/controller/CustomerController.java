@@ -37,9 +37,4 @@ public class CustomerController {
                 .body(personService.save(person));
         return entity;
     }
-
-//    @GetMapping("/check-status")
-//    public StatusOrderDto checkStatusOrder(@RequestParam int number) {
-//        return statusOrderService.getStatusByNumberOrder(number);
-//    } TODO:Доделать проверку статуса заказ
 }
