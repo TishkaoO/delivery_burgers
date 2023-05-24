@@ -1,6 +1,7 @@
 package com.example.delivery_burgers.api.handler;
 
 import com.example.delivery_burgers.api.exceptions.BadRequestException;
+import com.example.delivery_burgers.api.exceptions.PaymentException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ public class GlobalExceptionHandler {
         this.objectMapper = objectMapper;
     }
 
-    @ExceptionHandler(value = {NullPointerException.class, BadRequestException.class})
+    @ExceptionHandler(value = {NullPointerException.class, BadRequestException.class, PaymentException.class})
     public void handleException(Exception e, HttpServletRequest request, HttpServletResponse response) throws IOException {
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         response.setContentType("application/json");
