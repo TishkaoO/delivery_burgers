@@ -10,14 +10,4 @@ import java.util.Optional;
 @Repository
 public interface BurgerRepository extends JpaRepository<BurgerEntity, Long> {
     Optional<BurgerEntity> findByName(String name);
-
-    List<BurgerEntity> findByIsSpicyTrue();
-
-    List<BurgerEntity> findByIsSpicyTrueAndPriceBetweenOrderByPriceDesc(double minPrice, double maxPrice);
-
-    List<BurgerEntity> findByIsSpicyTrueAndPriceBetweenOrderByPriceAsc(double minPrice, double maxPrice);
-
-    List<BurgerEntity> findByPriceBetweenOrderByPriceDesc(double minPrice, double maxPrice);
-
-    List<BurgerEntity> findByPriceBetweenOrderByPriceAsc(double minPrice, double maxPrice);
 }

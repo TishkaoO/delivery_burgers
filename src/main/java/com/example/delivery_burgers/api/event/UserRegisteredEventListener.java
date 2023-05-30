@@ -13,10 +13,6 @@ public class UserRegisteredEventListener {
         this.messageSender = messageSender;
     }
 
-    /*
-    Аннотация `@EventListener` указывает, что метод `handleUserRegisteredEvent
-    ` является обработчиком событий и будет вызываться при возникновении события `UserRegisteredEvent`.
-     */
     @EventListener
     public void handleUserRegisteredEvent(UserRegisteredEvent event) {
         CustomerEntity user = event.getUser();

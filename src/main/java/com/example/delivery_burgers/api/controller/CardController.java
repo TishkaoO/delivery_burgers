@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
-@RestController
+@RestController()
 @RequiredArgsConstructor
 @RequestMapping("/cards")
 public class CardController {

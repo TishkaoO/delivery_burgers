@@ -33,8 +33,7 @@ public class PaymentService {
         StatusOrderEntity status = statusOrderService.getStatusByName("order has been paid");
         double debit = 0;
         LocalDateTime currentDateTime = LocalDateTime.now();
-        List<BurgerEntity> burgerEntities = order.getBurgers().stream()
-                .collect(Collectors.toList());
+        List<BurgerEntity> burgerEntities = order.getBurgers();
         double totalAmountOfTheOrder = burgerEntities.stream()
                 .mapToDouble(BurgerEntity::getPrice)
                 .sum();

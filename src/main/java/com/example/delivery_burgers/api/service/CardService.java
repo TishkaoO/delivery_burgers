@@ -33,13 +33,8 @@ public class CardService {
         return cardMapper.toDto(cardEntity);
     }
 
-    public void saveCard(CardEntity entity) {
-        cardRepository.save(entity);
-    }
-
     public CardEntity getCardById(Long id) {
-        return cardRepository.findById(id)
-                .orElseThrow(() -> new BadRequestException("card not found"));
+        return cardRepository.findById(id).orElseThrow(() -> new BadRequestException("card not found"));
     }
 
     private void linkCardToCustomer(Long customerId, Long cardId) {
