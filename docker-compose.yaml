@@ -1,0 +1,25 @@
+version: '3'
+services:
+  db:
+    image: postgres:14
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=delivery_burgers_db
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/delivery_burgers_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
+      - SPRING_JPA_DATABASE-PLATFORM=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_SHOW-SQL=true
+      - SPRING_JPA_HIBERNATE_GENERATE-DDL=true
+      - SPRING_LIQUIBASE_CHANGE-LOG=classpath:db/liquibase-changeLog-dev.xml
