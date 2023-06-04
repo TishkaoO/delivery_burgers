@@ -10,7 +10,6 @@ import com.example.delivery_burgers.store.entity.BurgerEntity;
 import com.example.delivery_burgers.store.entity.CustomerEntity;
 import com.example.delivery_burgers.store.entity.OrderEntity;
 import com.example.delivery_burgers.store.entity.StatusOrderEntity;
-import com.example.delivery_burgers.store.repository.CustomerRepository;
 import com.example.delivery_burgers.store.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,7 +31,7 @@ public class OrderService {
     private final StatusOrderService statusOrderService;
     private final StatusOrderMapper statusOrderMapper;
 
-    private int countNumberOrder = 1;
+    private AtomicInteger countNumberOrder = new AtomicInteger(1);
 
     public OrderDto createOrder(Long customerId, List<Long> burgerId) {
         List<BurgerEntity> burgerEntities = burgerId.stream()
@@ -41,7 +41,7 @@ public class OrderService {
                 .mapToDouble(BurgerEntity::getPrice)
                 .sum();
         OrderEntity builder = OrderEntity.builder()
-                .numberOrder(countNumberOrder++)
+                .numberOrder(countNumberOrder.getAndIncrement())
                 .burgers(burgerEntities)
                 .createdAt(Instant.now())
                 .build();

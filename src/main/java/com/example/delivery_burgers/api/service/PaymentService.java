@@ -13,9 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -27,6 +27,7 @@ public class PaymentService {
     private final CustomerRepository customerRepository;
     private final StatusOrderService statusOrderService;
 
+    @Transactional
     public AscDto payToTheOrder(Long orderId, Long cardId) {
         OrderEntity order = orderService.getOrderEntityByIdOrElseThrow(orderId);
         CardEntity card = cardService.getCardById(cardId);
